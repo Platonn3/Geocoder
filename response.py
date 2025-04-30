@@ -1,4 +1,5 @@
 import requests
+import parsing as parse
 
 
 def get_full_address(address):
@@ -21,7 +22,8 @@ def get_full_address(address):
             if response.text.strip():
                 data = response.json()
                 if data:
-                    print(data[0])
+                    address = data[0]
+                    parse.parse_output_address(address)
                 else:
                     print("Адрес не найден")
             else:
