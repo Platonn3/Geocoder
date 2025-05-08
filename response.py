@@ -1,10 +1,12 @@
+from dotenv import load_dotenv
+import os
 import requests
 import parsing as parse
 
 
 def send_request(address):
     headers = {
-        "User-Agent": "MyGeocoderApp/1.0 (platon.kurbatov87@gmail.com)"
+        "User-Agent": os.getenv("USER_AGENT")
     }
     params = {"q": address,
               "format": "json",
