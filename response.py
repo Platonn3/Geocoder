@@ -2,7 +2,7 @@ import requests
 import parsing as parse
 
 
-def get_full_address(address):
+def send_request(address):
     headers = {
         "User-Agent": "MyGeocoderApp/1.0 (platon.kurbatov87@gmail.com)"
     }
