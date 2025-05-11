@@ -6,7 +6,7 @@ import parsing as parse
 
 def send_request(address):
     headers = {
-        "User-Agent": os.getenv("USER_AGENT")
+        "User-Agent": "MyGeocoderApp/1.0 (platon.kurbatov87@gmail.com)"
     }
     params = {"q": address,
               "format": "json",
