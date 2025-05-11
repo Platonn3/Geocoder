@@ -1,21 +1,16 @@
 import response as req
 
 
-def choose_input():
+def choose_input(choice):
     try:
-        print("Нажмите 1, если хотите ввести широту и долготу")
-        print("Нажмите 2, если хотите ввести адрес в виде: город, улица, номер дома")
-        number = input()
-        if int(number) == 1:
+        if int(choice) == 1:
             parse_input_coordinates()
-        elif int(number) == 2:
+        elif int(choice) == 2:
             parse_input_address()
         else:
-            print("Ошибка ввода, выберете 1 или 2 вариант")
-    except ValueError:
-        print("Ошибка ввода, выберете 1 или 2 вариант")
+            print("Ошибка: выберите 1 или 2.")
     except Exception as e:
-        print(f"Непредвиденная ошибка: {e}")
+        print(f"Ошибка: {e}")
 
 
 def parse_input_address():
