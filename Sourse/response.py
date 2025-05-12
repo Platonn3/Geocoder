@@ -1,7 +1,5 @@
-from dotenv import load_dotenv
-import os
 import requests
-import parsing as parse
+from Sourse import parsing as parse
 
 
 def send_request(address):
