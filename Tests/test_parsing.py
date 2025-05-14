@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import patch
-from Sourse import parsing
+from Source import parsing
 
 
 class TestParsingInputErrors(unittest.TestCase):

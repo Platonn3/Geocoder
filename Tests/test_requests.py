@@ -3,13 +3,13 @@ from unittest.mock import patch, MagicMock
 
 from requests import RequestException
 
-from Sourse import response
+from Source import response
 
 
 class TestSendRequest(unittest.TestCase):
 
-    @patch('Sourse.response.parse.parse_output_address')
-    @patch('Sourse.response.requests.get')
+    @patch('Source.response.parse.parse_output_address')
+    @patch('Source.response.requests.get')
     def test_send_request_successful_ekb(self, mock_get, mock_parse_output):
         mock_response = MagicMock()
         mock_response.ok = True
@@ -29,7 +29,7 @@ class TestSendRequest(unittest.TestCase):
         })
 
     @patch('builtins.print')
-    @patch('Sourse.response.requests.get')
+    @patch('Source.response.requests.get')
     def test_send_request_http_error(self, mock_get, mock_print):
         mock_response = MagicMock()
         mock_response.ok = False
@@ -41,7 +41,7 @@ class TestSendRequest(unittest.TestCase):
         mock_print.assert_any_call("Ошибка HTTP: 500")
 
     @patch('builtins.print')
-    @patch('Sourse.response.requests.get')
+    @patch('Source.response.requests.get')
     def test_send_request_empty_response_text(self, mock_get, mock_print):
         mock_response = MagicMock()
         mock_response.ok = True
@@ -53,7 +53,7 @@ class TestSendRequest(unittest.TestCase):
         mock_print.assert_any_call("Пустой ответ от сервера")
 
     @patch('builtins.print')
-    @patch('Sourse.response.requests.get')
+    @patch('Source.response.requests.get')
     def test_send_request_no_data(self, mock_get, mock_print):
         mock_response = MagicMock()
         mock_response.ok = True
@@ -66,7 +66,7 @@ class TestSendRequest(unittest.TestCase):
         mock_print.assert_any_call("Адрес не найден")
 
     @patch('builtins.print')
-    @patch('Sourse.response.requests.get', side_effect=RequestException("Сетевая ошибка"))
+    @patch('Source.response.requests.get', side_effect=RequestException("Сетевая ошибка"))
     def test_send_request_network_error(self, mock_get, mock_print):
         response.send_request("Парк Маяковского Екатеринбург")
         mock_print.assert_any_call("Ошибка запроса Сетевая ошибка")

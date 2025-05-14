@@ -1,5 +1,5 @@
 import requests
-from Sourse import parsing as parse
+from Source import parsing as parse
 
 
 def send_request(address):

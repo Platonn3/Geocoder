@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import patch
-from Sourse import main
+import main
 
 
 class TestMainHelp(unittest.TestCase):
