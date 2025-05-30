@@ -6,7 +6,7 @@ def run_tests():
     suite = unittest.TestSuite()
 
     suite.addTests(loader.loadTestsFromName('test_database'))
-    # suite.addTests(loader.loadTestsFromName('test_help'))
+    suite.addTests(loader.loadTestsFromName('test_help'))
     suite.addTests(loader.loadTestsFromName('test_parsing'))
     suite.addTests(loader.loadTestsFromName('test_requests'))
 
