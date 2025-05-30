@@ -1,72 +1,82 @@
 import unittest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, AsyncMock, MagicMock
+import requests
 
-from requests import RequestException
-
-from Source import response
+from Source.response import send_request
 
 
-class TestSendRequest(unittest.TestCase):
+class TestSendRequest(unittest.IsolatedAsyncioTestCase):
 
-    @patch('Source.response.parse.parse_output_address')
-    @patch('Source.response.requests.get')
-    def test_send_request_successful_ekb(self, mock_get, mock_parse_output):
-        mock_response = MagicMock()
-        mock_response.ok = True
-        mock_response.text = '[{"display_name": "Храм на Крови, Екатеринбург, Россия", "lat": "56.837", "lon": "60.605"}]'
-        mock_response.json.return_value = [
-            {"display_name": "Храм на Крови, Екатеринбург, Россия", "lat": "56.837", "lon": "60.605"}
-        ]
-        mock_get.return_value = mock_response
+    @patch("Source.response.requests.get")
+    @patch("Source.response.return_address_if_exist", new_callable=AsyncMock)
+    @patch("Source.response.parse.parse_output_address", new_callable=AsyncMock)
+    async def test_send_request_success(self, mock_parse, mock_return, mock_get):
+        mock_return.return_value = None
 
-        response.send_request("Храм на Крови Екатеринбург")
+        mock_resp = MagicMock()
+        mock_resp.ok = True
+        mock_resp.json.return_value = [{
+            "display_name": "Екатеринбург, Россия",
+            "lat": "56.8389",
+            "lon": "60.6057"
+        }]
+        mock_get.return_value = mock_resp
 
+        await send_request("Екатеринбург")
         mock_get.assert_called_once()
-        mock_parse_output.assert_called_once_with({
-            "display_name": "Храм на Крови, Екатеринбург, Россия",
-            "lat": "56.837",
-            "lon": "60.605"
-        })
+        mock_parse.assert_awaited_once()
 
-    @patch('builtins.print')
-    @patch('Source.response.requests.get')
-    def test_send_request_http_error(self, mock_get, mock_print):
-        mock_response = MagicMock()
-        mock_response.ok = False
-        mock_response.status_code = 500
-        mock_get.return_value = mock_response
+    @patch("Source.response.requests.get")
+    @patch("Source.response.return_address_if_exist", new_callable=AsyncMock)
+    async def test_send_request_empty_result(self, mock_return, mock_get):
+        # Адреса нет в БД — запрос вернул пустой список
+        mock_return.return_value = None
 
-        response.send_request("Плотинка Екатеринбург")
+        mock_resp = MagicMock()
+        mock_resp.ok = True
+        mock_resp.json.return_value = []
+        mock_get.return_value = mock_resp
 
-        mock_print.assert_any_call("Ошибка HTTP: 500")
+        with patch("builtins.print") as mock_print:
+            await send_request("пустой адрес")
+            mock_print.assert_any_call("Адрес не найден")
 
-    @patch('builtins.print')
-    @patch('Source.response.requests.get')
-    def test_send_request_empty_response_text(self, mock_get, mock_print):
-        mock_response = MagicMock()
-        mock_response.ok = True
-        mock_response.text = ''
-        mock_get.return_value = mock_response
+    @patch("Source.response.requests.get")
+    @patch("Source.response.return_address_if_exist", new_callable=AsyncMock)
+    async def test_send_request_http_error(self, mock_return, mock_get):
+        mock_return.return_value = None
 
-        response.send_request("Улица Вайнера Екатеринбург")
+        mock_resp = MagicMock()
+        mock_resp.ok = False
+        mock_resp.status_code = 500
+        mock_get.return_value = mock_resp
 
-        mock_print.assert_any_call("Пустой ответ от сервера")
+        with patch("builtins.print") as mock_print:
+            await send_request("ошибочный адрес")
+            mock_print.assert_any_call("Ошибка HTTP: 500")
 
-    @patch('builtins.print')
-    @patch('Source.response.requests.get')
-    def test_send_request_no_data(self, mock_get, mock_print):
-        mock_response = MagicMock()
-        mock_response.ok = True
-        mock_response.text = '[]'
-        mock_response.json.return_value = []
-        mock_get.return_value = mock_response
+    @patch("Source.response.requests.get", side_effect=requests.exceptions.RequestException("timeout"))
+    @patch("Source.response.return_address_if_exist", new_callable=AsyncMock)
+    async def test_send_request_request_exception(self, mock_return, mock_get):
+        mock_return.return_value = None
 
-        response.send_request("Неизвестное место в Екатеринбурге")
+        with patch("builtins.print") as mock_print:
+            await send_request("ошибочный адрес")
+            mock_print.assert_any_call("Ошибка запроса: timeout")
 
-        mock_print.assert_any_call("Адрес не найден")
+    @patch("Source.response.return_address_if_exist", new_callable=AsyncMock)
+    async def test_send_request_from_cache(self, mock_return):
+        mock_address = MagicMock()
+        mock_address.latitude = "56.8389"
+        mock_address.longitude = "60.6057"
+        mock_address.full_address = "Екатеринбург, Россия"
+        mock_return.return_value = mock_address
 
-    @patch('builtins.print')
-    @patch('Source.response.requests.get', side_effect=RequestException("Сетевая ошибка"))
-    def test_send_request_network_error(self, mock_get, mock_print):
-        response.send_request("Парк Маяковского Екатеринбург")
-        mock_print.assert_any_call("Ошибка запроса Сетевая ошибка")
+        with patch("builtins.print") as mock_print:
+            await send_request("Екатеринбург")
+            mock_print.assert_any_call("Широта: 56.8389")
+            mock_print.assert_any_call("Долгота: 60.6057")
+            mock_print.assert_any_call("Полный адрес: Екатеринбург, Россия")
+
+if __name__ == "__main__":
+    unittest.main()
