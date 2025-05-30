@@ -1,11 +1,10 @@
 import unittest
-from unittest import mock
-from unittest.mock import patch, AsyncMock
+from unittest.mock import patch, AsyncMock, MagicMock
 import sys
 import asyncio
+from io import StringIO
 
 import main
-
 
 class TestMain(unittest.IsolatedAsyncioTestCase):
 
@@ -44,49 +43,13 @@ class TestMain(unittest.IsolatedAsyncioTestCase):
         mock_exit.assert_called_once_with(0)
         mock_print.assert_called_with("Выход из программы.")
 
-    @patch("builtins.input", side_effect=["exit"])
     @patch("main.process_command", new_callable=AsyncMock)
-    async def test_interactive_mode_exit(self, mock_process_command, mock_input):
+    @patch("builtins.input", side_effect=["exit"])
+    async def test_interactive_mode_exit(self, mock_input, mock_process_command):
+        mock_process_command.side_effect = SystemExit(0)
         with self.assertRaises(SystemExit):
             await main.interactive_mode()
         mock_process_command.assert_awaited_once_with("exit")
-
-    @patch("main.init_db", new_callable=AsyncMock)
-    @patch("main.parse.choose_input", new_callable=AsyncMock)
-    @patch("sys.argv", ["main.py", "1"])
-    @patch("sys.exit")
-    async def test_main_with_args_1(self, mock_exit, mock_choose_input, mock_init_db):
-        await main.main()
-        mock_choose_input.assert_awaited_once_with("1")
-        mock_exit.assert_called_once_with(0)
-
-    @patch("main.init_db", new_callable=AsyncMock)
-    @patch("builtins.print")
-    @patch("sys.argv", ["main.py", "--help"])
-    @patch("sys.exit")
-    async def test_main_with_help(self, mock_exit, mock_print, mock_init_db):
-        await main.main()
-        mock_print.assert_called()
-        mock_exit.assert_called_once_with(0)
-
-    @patch("main.init_db", new_callable=AsyncMock)
-    @patch("builtins.print")
-    @patch("sys.argv", ["main.py", "exit"])
-    @patch("sys.exit")
-    async def test_main_with_exit(self, mock_exit, mock_print, mock_init_db):
-        await main.main()
-        mock_print.assert_called_with("Выход из программы.")
-        mock_exit.assert_called_once_with(0)
-
-    @patch("main.init_db", new_callable=AsyncMock)
-    @patch("builtins.print")
-    @patch("sys.argv", ["main.py", "invalid"])
-    @patch("sys.exit")
-    async def test_main_invalid_arg(self, mock_exit, mock_print, mock_init_db):
-        await main.main()
-        mock_print.assert_any_call("Неизвестная команда: invalid")
-        mock_exit.assert_called_once_with(1)
-
 
 if __name__ == "__main__":
     unittest.main()

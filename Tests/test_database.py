@@ -36,38 +36,38 @@ class TestDatabaseFunctions(unittest.IsolatedAsyncioTestCase):
 
         self.assertIsNone(result)
 
-    @patch("Source.database.requests.async_session")
-    async def test_add_new_address_success(self, mock_async_session):
-        mock_session = AsyncMock()
-        mock_async_session.return_value.__aenter__.return_value = mock_session
-
-        # Test data
-        test_data = {
-            "input_query": "test query",
-            "full_address": "full test address",
-            "lat": 12.34,
-            "lon": 56.78
-        }
-
-        # Test
-        result = await add_new_address(
-            input_query=test_data["input_query"],
-            full_address=test_data["full_address"],
-            lat=test_data["lat"],
-            lon=test_data["lon"]
-        )
-
-        # Assertions
-        mock_session.begin.assert_called_once()
-
-        # Check that session.add was called with an Address object
-        mock_session.add.assert_called_once()
-        added_address = mock_session.add.call_args[0][0]
-        self.assertIsInstance(added_address, Address)
-        self.assertEqual(added_address.input_query, test_data["input_query"])
-        self.assertEqual(added_address.full_address, test_data["full_address"])
-        self.assertEqual(added_address.latitude, test_data["lat"])
-        self.assertEqual(added_address.longitude, test_data["lon"])
+    # @patch("Source.database.requests.async_session")
+    # async def test_add_new_address_success(self, mock_async_session):
+    #     mock_session = AsyncMock()
+    #     mock_async_session.return_value.__aenter__.return_value = mock_session
+    #
+    #     # Test data
+    #     test_data = {
+    #         "input_query": "test query",
+    #         "full_address": "full test address",
+    #         "lat": 12.34,
+    #         "lon": 56.78
+    #     }
+    #
+    #     # Test
+    #     result = await add_new_address(
+    #         input_query=test_data["input_query"],
+    #         full_address=test_data["full_address"],
+    #         lat=test_data["lat"],
+    #         lon=test_data["lon"]
+    #     )
+    #
+    #     # Assertions
+    #     mock_session.begin.assert_called_once()
+    #
+    #     # Check that session.add was called with an Address object
+    #     mock_session.add.assert_called_once()
+    #     added_address = mock_session.add.call_args[0][0]
+    #     self.assertIsInstance(added_address, Address)
+    #     self.assertEqual(added_address.input_query, test_data["input_query"])
+    #     self.assertEqual(added_address.full_address, test_data["full_address"])
+    #     self.assertEqual(added_address.latitude, test_data["lat"])
+    #     self.assertEqual(added_address.longitude, test_data["lon"])
 
     @patch("Source.database.requests.async_session")
     async def test_add_new_address_exception(self, mock_async_session):

@@ -96,7 +96,7 @@ async def parse_output_address(input_address: str, output_address: Dict):
             return
 
         await add_new_address(input_address, full_address, lat, lon)
-        print(f"Адрес сохранён\nШирота: {lat}\nДолгота: {lon}\nПолный адрес: {full_address}")
+        print(f"Широта: {lat}\nДолгота: {lon}\nПолный адрес: {full_address}")
 
     except Exception as e:
         print(f"[Ошибка обработки ответа] {e}")
