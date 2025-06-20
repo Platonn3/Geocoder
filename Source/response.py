@@ -7,7 +7,9 @@ async def send_request(address):
     headers = {
         "User-Agent": "MyGeocoderApp/1.0 (platon.kurbatov87@gmail.com)"
     }
-    params = {"q": address, "format": "json", "limit": 1, "accept-language": "ru"}
+    params = {
+        "q": address, "format": "json", "limit": 1, "accept-language": "ru"
+    }
 
     full_address = await return_address_if_exist(address)
     if full_address is None:

@@ -20,10 +20,13 @@ def clean_address(address: str) -> Optional[Dict]:
 def build_normalized_address(cleaned_data: Dict) -> Optional[str]:
     try:
         fields_order = ['street', 'house', 'city', 'region', 'country']
-        parts = [cleaned_data[field] for field in fields_order if cleaned_data.get(field)]
+        parts = [
+            cleaned_data[field] for field in fields_order if cleaned_data.get(field)
+        ]
 
         if not parts:
-            print("Не удалось построить нормализованный адрес — все поля пусты")
+            print(
+                "Не удалось построить нормализованный адрес — все поля пусты")
             return None
 
         return ' '.join(parts)
@@ -60,7 +63,8 @@ async def parse_input_address():
 
 async def parse_input_coordinates():
     try:
-        coords = input("Введите широту и долготу через пробел: ").strip().split()
+        coords = input(
+            "Введите широту и долготу через пробел: ").strip().split()
         if len(coords) != 2:
             raise ValueError("Нужно ввести две координаты")
 

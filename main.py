@@ -1,11 +1,13 @@
-import sys
 import asyncio
-from Source import parsing as parse
-from Source.database.models import init_db
 import subprocess
 import sys
 
-subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", "requirements"])
+from Source import parsing as parse
+from Source.database.models import init_db
+
+subprocess.check_call(
+    [sys.executable, "-m", "pip", "install", "-r", "requirements.txt"])
+
 
 def show_help():
     """Выводит справку по доступным командам"""

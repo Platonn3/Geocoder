@@ -6,6 +6,7 @@ from io import StringIO
 
 import main
 
+
 class TestMain(unittest.IsolatedAsyncioTestCase):
 
     @patch("builtins.print")
@@ -50,6 +51,7 @@ class TestMain(unittest.IsolatedAsyncioTestCase):
         with self.assertRaises(SystemExit):
             await main.interactive_mode()
         mock_process_command.assert_awaited_once_with("exit")
+
 
 if __name__ == "__main__":
     unittest.main()

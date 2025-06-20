@@ -9,8 +9,12 @@ class TestSendRequest(unittest.IsolatedAsyncioTestCase):
 
     @patch("Source.response.requests.get")
     @patch("Source.response.return_address_if_exist", new_callable=AsyncMock)
-    @patch("Source.response.parse.parse_output_address", new_callable=AsyncMock)
-    async def test_send_request_success(self, mock_parse, mock_return, mock_get):
+    @patch(
+        "Source.response.parse.parse_output_address", new_callable=AsyncMock
+    )
+    async def test_send_request_success(
+            self, mock_parse, mock_return, mock_get
+    ):
         mock_return.return_value = None
 
         mock_resp = MagicMock()
@@ -29,7 +33,6 @@ class TestSendRequest(unittest.IsolatedAsyncioTestCase):
     @patch("Source.response.requests.get")
     @patch("Source.response.return_address_if_exist", new_callable=AsyncMock)
     async def test_send_request_empty_result(self, mock_return, mock_get):
-        # Адреса нет в БД — запрос вернул пустой список
         mock_return.return_value = None
 
         mock_resp = MagicMock()
@@ -55,7 +58,10 @@ class TestSendRequest(unittest.IsolatedAsyncioTestCase):
             await send_request("ошибочный адрес")
             mock_print.assert_any_call("Ошибка HTTP: 500")
 
-    @patch("Source.response.requests.get", side_effect=requests.exceptions.RequestException("timeout"))
+    @patch(
+        "Source.response.requests.get",
+        side_effect=requests.exceptions.RequestException("timeout")
+    )
     @patch("Source.response.return_address_if_exist", new_callable=AsyncMock)
     async def test_send_request_request_exception(self, mock_return, mock_get):
         mock_return.return_value = None
@@ -77,6 +83,7 @@ class TestSendRequest(unittest.IsolatedAsyncioTestCase):
             mock_print.assert_any_call("Широта: 56.8389")
             mock_print.assert_any_call("Долгота: 60.6057")
             mock_print.assert_any_call("Полный адрес: Екатеринбург, Россия")
+
 
 if __name__ == "__main__":
     unittest.main()

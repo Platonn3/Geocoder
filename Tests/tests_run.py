@@ -1,8 +1,10 @@
-import unittest
 import subprocess
 import sys
+import unittest
 
-subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", "requirements"])
+subprocess.check_call(
+    [sys.executable, "-m", "pip", "install", "-r", "requirements.txt"]
+)
 
 
 def run_tests():

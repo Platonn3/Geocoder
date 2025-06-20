@@ -1,5 +1,0 @@
-aiosqlite
-asyncpg
-sqlalchemy[asyncio]
-requests
-dadata
