@@ -22,7 +22,6 @@ class TestDatabaseFunctions(unittest.IsolatedAsyncioTestCase):
 
     @patch("Source.database.requests.async_session")
     async def test_return_address_if_exist_not_found(self, mock_async_session):
-        # Setup mock
         mock_result = AsyncMock()
         mock_result.scalar_one_or_none = MagicMock(return_value=None)
 
@@ -37,7 +36,6 @@ class TestDatabaseFunctions(unittest.IsolatedAsyncioTestCase):
 
     @patch("Source.database.requests.async_session")
     async def test_add_new_address_exception(self, mock_async_session):
-        # Setup mock with exception
         mock_session = AsyncMock()
         mock_session.begin.return_value.__aenter__.side_effect = Exception("DB error")
         mock_async_session.return_value.__aenter__.return_value = mock_session
